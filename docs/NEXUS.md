@@ -50,6 +50,7 @@ The mod changes the [i]dice rolls[/i], never the [i]rules[/i]. Every probability
 
 [size=4][b]Important[/b][/size]
 [list]
+[*][b]Modded seeds still reproduce among mod users.[/b] The mix is a fixed transform, so a seed shared between two players on [b]the same mod version[/b] plays out identically — seed-sharing still works, just within the "same-version mod users" group instead of with vanilla players. (Mention the version when sharing, e.g. [i]Sts2RngFix v0.1.0[/i].)
 [*]Outcomes differ from vanilla, so [b]seeds shared with non-modded players and daily seeds will not reproduce[/b].
 [*][b]Single-player is recommended.[/b] In multiplayer, every player in the lobby must run the mod or the run desyncs.
 [/list]

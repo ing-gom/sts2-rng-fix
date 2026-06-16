@@ -37,6 +37,7 @@ Full bit-diffusion makes the per-stream seeds statistically independent, so the 
 ## Important: what changes and what doesn't
 
 - ✅ **Determinism is preserved.** The same seed still always produces the same run. The mod is a deterministic function.
+- ✅ **Modded seeds reproduce among mod users.** The mix is a fixed transform, so a seed shared between two players who both run **the same mod version** plays out identically. Seed-sharing still works — the compatible group is just "same-version mod users" instead of "vanilla players". (When sharing a seed, mention the version, e.g. *Sts2RngFix v0.1.0*; a future change to the mix would form a new compatibility group.)
 - ⚠️ **Vanilla seed compatibility is not.** A given seed produces a *different* (now-unbiased) outcome than vanilla, so seeds shared with non-modded players / daily seeds won't reproduce.
 - ⚠️ **Multiplayer:** since outcomes differ from vanilla, all players in a lobby must run the mod (or it desyncs). **Single-player is recommended.**
 
