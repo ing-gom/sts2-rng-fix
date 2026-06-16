@@ -40,6 +40,33 @@ Full bit-diffusion makes the per-stream seeds statistically independent, so the 
 - ⚠️ **Vanilla seed compatibility is not.** A given seed produces a *different* (now-unbiased) outcome than vanilla, so seeds shared with non-modded players / daily seeds won't reproduce.
 - ⚠️ **Multiplayer:** since outcomes differ from vanilla, all players in a lobby must run the mod (or it desyncs). **Single-player is recommended.**
 
+## Scope — what changes vs what's preserved
+
+The fix is a single patch on the `Rng` constructor, which is the **one chokepoint every gameplay random draw passes through** (verified across the whole decompiled assembly). So the boundary is clean: anything that goes through `Rng` is affected; anything that doesn't is untouched.
+
+**One-line summary:** the mod changes the *dice rolls*, never the *rules*. Every probability, pool, weight, and pity system stays exactly as vanilla — only (a) which outcome a given seed lands on and (b) the correlation between streams change.
+
+### ✅ Preserved
+
+- **Determinism** — same seed → same modded run, every time. Save/load restores the exact stream position.
+- **All probability rules / distributions / pools / weights / pity** — not a single game rule is changed. Card rarity odds, the curse pool, map node frequencies, shop pricing, Defect orb ratios, etc. are all vanilla.
+- **Unconditional (marginal) distributions** — overall stats like "card rewards are 60% common" or "overall curse appearance rate" are identical (vanilla was already uniform *unconditionally*).
+- **Within-stream quality** — each stream is still one `System.Random`; its internal sequence quality was already fine and is unchanged.
+- **Displayed seed string and all non-RNG logic** — card effects, damage formulas, fixed rewards/events, fixed treasure nodes, etc.
+- **Cosmetic/visual randomness** — VFX scale, poison-smoke direction, shader noise, color jitter, etc. live *outside* `Rng` and are deliberately left alone (they're meant to be non-deterministic visual flavor).
+
+### 🔄 Changed
+
+1. **Concrete outcomes per seed** — which map/monsters/cards/rewards/curse/shop a given seed produces differs from vanilla (seeds are re-mixed). This is why vanilla seed-sharing / daily seeds no longer reproduce.
+2. **Cross-stream correlation removed** — you can no longer predict one result from another (e.g. "starting map → Neow's Bones curse"). This is the whole point of the fix.
+3. **Adjacent-seed correlation removed** — related side effects like consecutive-NetId enemy skin/power correlation are cleared up too.
+
+### Gameplay streams affected (all re-rolled; rules preserved)
+
+- **RunRngType (12):** UpFront, Shuffle (combat deck order), UnknownMapPoint (? room type), CombatCardGeneration, CombatPotionGeneration, CombatCardSelection, CombatEnergyCosts, CombatTargets, MonsterAi (enemy intents), Niche (Neow's Bones curse, …), CombatOrbs (Defect), TreasureRoomRelics
+- **PlayerRngType (3):** Rewards (card/relic rewards), Shops (shop stock), Transformations (**includes Act 2 transform cards**)
+- **Plus** map generation, monster encounters, and per-entity RNG — all flow through `Rng` and are mixed too.
+
 ## Install
 
 1. Download `Sts2RngFix-vX.Y.Z.zip` from [Releases](../../releases).
