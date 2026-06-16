@@ -34,6 +34,8 @@ Full bit-diffusion makes the per-stream seeds statistically independent, so the 
 
 **Verified offline (2,000,000 seeds):** conditioning a 10-way choice on a correlated 4-way stream skews it to **31.8% / 0.0%** with raw seeds, and back to **9.9–10.1% per option** after the mix.
 
+**Verified in the real game engine** (headless boot, real `CurseCardPool`, 120k seeds): the actual Neow's Bones curse, conditioned on the starting map, has several curses at **0.00%** and others at **24–26%** in vanilla — and a flat **~10% each** with the mod. Full per-curse table: [docs/curse_distribution.md](docs/curse_distribution.md).
+
 ## Important: what changes and what doesn't
 
 - ✅ **Determinism is preserved.** The same seed still always produces the same run. The mod is a deterministic function.
