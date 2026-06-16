@@ -1,0 +1,11 @@
+{
+  "id": "Sts2RngFix",
+  "name": "StS2 RNG Fix",
+  "author": "inggom",
+  "description": "게임의 난수 스트림들이 서로 상관되어 생기는 편향을 제거합니다. 슬더스2는 12개 RNG 스트림을 '런 시드 + 스트림이름 해시'로 만드는데, .NET System.Random의 첫 출력이 시드에 거의 선형이라 맵·이벤트·보상 스트림의 첫 뽑기가 서로 상관됩니다. 그 결과 무조건부로는 균등해 보여도, 플레이어가 관측 가능한 것(시작 맵 등)으로 조건을 걸면 특정 결과가 크게 편향됩니다 — 예: 고래밥(Neow's Bones) 저주가 시작 맵에 따라 빚 54% / 몸부림 73%로 쏠리고 일부 저주는 거의 안 나옴, 2막 변화 카드 풀 편중 등. 이는 슬더스1의 'Correlated Randomness' 버그가 슬더스2에 남은 것입니다. 이 모드는 각 스트림 시드를 System.Random에 넣기 전에 avalanche 해시(splitmix32)로 한 번 섞어 스트림들을 통계적으로 독립시킵니다. 결정성(같은 시드 → 같은 결과)은 그대로 유지되며, 결과 매핑만 바닐라와 달라집니다(따라서 시드 공유/재현은 바닐라와 호환되지 않음). 싱글플레이 권장 — 멀티에서는 전원이 같은 모드를 써야 desync가 없습니다. 모드 끄기: STS2_RNG_FIX_DISABLED=1.",
+  "version": "v0.1.0",
+  "has_pck": false,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": true
+}
