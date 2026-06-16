@@ -36,6 +36,18 @@ Full bit-diffusion makes the per-stream seeds statistically independent, so the 
 
 **Verified in the real game engine** (headless boot, real `CurseCardPool`, 120k seeds): the actual Neow's Bones curse, conditioned on the starting map, has several curses at **0.00%** and others at **24–26%** in vanilla — and a flat **~10% each** with the mod. Full per-curse table: [docs/curse_distribution.md](docs/curse_distribution.md).
 
+The same probe confirms the other reward streams are fixed too — conditioned on the map, worst-case option probability (uniform in parentheses), vanilla → fixed:
+
+| Stream (drives) | vanilla worst / min | fixed | uniform |
+|---|---|---|---|
+| card transform (`Transformations`) | 45.9% / 0.0% | ~12.5% | 12.5% |
+| in-combat upgrade (`CombatCardSelection`) | 38.7% / 1.1% | ~20% | 20% |
+| deck upgrade·enchant + curse (`Niche`) | 26.2% / 0.0% | ~10% | 10% |
+| combat shuffle (`Shuffle`) | 36.8% / 3.3% | ~20% | 20% |
+| card/relic reward (`Rewards`) | 48.2% / 0.0% | ~12.5% | 12.5% |
+
+So **card-transform and upgrade/enchant randomness are fixed** by the same single patch — see [docs/curse_distribution.md](docs/curse_distribution.md#other-rng-streams--card-transform-upgrade-rewards-shuffle).
+
 ## Important: what changes and what doesn't
 
 - ✅ **Determinism is preserved.** The same seed still always produces the same run. The mod is a deterministic function.

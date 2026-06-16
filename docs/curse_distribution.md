@@ -90,6 +90,22 @@ Each cell = P(curse | that map bucket). **Uniform target = 10%.** `fixed` is 9.6
 | SHAME (수치) | **0.00%** | 10.21% |
 | WRITHE (몸부림) | 6.32% | 10.02% |
 
+## Other RNG streams — card transform, upgrade, rewards, shuffle
+
+The curse above is one consumer of the `Niche` stream. The same probe also swept the other streams that drive **card transform**, **random upgrade/enchant**, **rewards**, and **combat shuffle** — each measured as "pick 1 of N", conditioned on the same map bucket. `worst` / `min` = the most / least likely option within a bucket; **uniform = 100/N**.
+
+| Stream (what it drives) | N | vanilla worst | vanilla min | fixed (worst–min) | uniform |
+|---|---|---|---|---|---|
+| `Transformations` — card transform (변환) | 8 | **45.93%** | **0.00%** | 12.99–12.09% | 12.50% |
+| `CombatCardSelection` — in-combat upgrade (강화) | 5 | 38.69% | 1.12% | 20.60–19.68% | 20.00% |
+| `Niche` — deck upgrade/enchant + curse | 10 | 26.17% | **0.00%** | 10.43–9.65% | 10.00% |
+| `Shuffle` — combat draw order | 5 | 36.82% | 3.30% | 20.43–19.66% | 20.00% |
+| `Rewards` — card/relic reward | 8 | **48.17%** | **0.00%** | 12.87–12.04% | 12.50% |
+
+Card transform and reward picks are the **most skewed** of all (one option ~46–48% / others impossible, conditioned on the map) — and the mod flattens every stream to its uniform target. So **card-transform and upgrade/enchant randomness are fixed** by the same single patch; there is no separate code path that bypasses it.
+
+(Card transform's *exact target card names* are run-dependent — they need a live deck/owner — so this measures the underlying `Transformations` stream rather than per-card names. The bias is a property of the stream; the specific card picked rides on it.)
+
 ## Takeaway
 
 In vanilla, **which curse Neow's Bones gives is largely decided by your map** — in each bucket several curses are *impossible* (0.00%) and one or two dominate (24–26%). Unconditionally it still looks like a fair 10% each, which is why it goes unnoticed. With `Sts2RngFix` every curse is ~10% in every bucket — the curse is no longer predictable from the map.
