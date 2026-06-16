@@ -1,37 +1,50 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Random;
 
 namespace Sts2RngFix.Patches;
 
 /// <summary>
-/// Postfix on <see cref="Rng"/>'s primary constructor <c>Rng(uint seed, int counter)</c> — the single
-/// place the underlying <c>System.Random</c> is created (<c>_random = new System.Random((int)seed)</c>).
-/// The <c>Rng(uint, string)</c> overload chains into this one, so this patch also covers name-derived
-/// streams.
-///
-/// We rebuild <c>_random</c> from the avalanche-mixed seed and then replay <c>Counter</c> draws so the
-/// stream lands at the exact same position the original constructor left it at (the base constructor
-/// runs <c>FastForwardCounter(counter)</c> before this postfix, setting <see cref="Rng.Counter"/>).
-/// This keeps save/load deterministic: a reloaded run reconstructs the identical mixed stream.
-///
-/// We do not touch the public <see cref="Rng.Seed"/> value, so any code that further derives seeds
-/// from it (e.g. <c>seed + NetId + hash(id)</c>) keeps using the vanilla values — those get mixed in
-/// turn when they construct their own <see cref="Rng"/>.
+/// Shared mixing logic for the two <see cref="Rng"/>-constructor patches below. Rebuilds the
+/// underlying <c>System.Random</c> from the avalanche-mixed seed and replays <see cref="Rng.Counter"/>
+/// draws so the stream lands at the exact position the original constructor left it (keeping save/load
+/// deterministic). The public <see cref="Rng.Seed"/> value is left untouched.
 /// </summary>
-[HarmonyPatch(typeof(Rng), MethodType.Constructor, new[] { typeof(uint), typeof(int) })]
-internal static class Rng_Constructor_Patch
+internal static class RngMix
 {
     private static readonly AccessTools.FieldRef<Rng, System.Random> RandomRef =
         AccessTools.FieldRefAccess<Rng, System.Random>("_random");
 
-    private static void Postfix(Rng __instance, uint seed)
+    internal static void Apply(Rng instance, uint finalSeed)
     {
-        uint mixed = RngFixService.Mix(seed);
-        var r = new System.Random(unchecked((int)mixed));
-
-        int counter = __instance.Counter;
+        var r = new System.Random(unchecked((int)RngFixService.Mix(finalSeed)));
+        int counter = instance.Counter;
         for (int i = 0; i < counter; i++) r.Next();
-
-        RandomRef(__instance) = r;
+        RandomRef(instance) = r;
     }
+}
+
+/// <summary>
+/// Patches <c>Rng(uint, int)</c> — the direct-seed constructor (e.g. <c>new Rng(runSeed + NetId)</c>,
+/// <c>Rng.Chaotic</c>) and the chaining target of the string overload.
+/// </summary>
+[HarmonyPatch(typeof(Rng), MethodType.Constructor, new[] { typeof(uint), typeof(int) })]
+internal static class Rng_UintInt_Ctor_Patch
+{
+    private static void Postfix(Rng __instance, uint seed) => RngMix.Apply(__instance, seed);
+}
+
+/// <summary>
+/// Patches <c>Rng(uint, string)</c> — the name-derived constructor used by
+/// <see cref="MegaCrit.Sts2.Core.Runs.RunRngSet"/> for its per-purpose streams. It normally chains into
+/// <c>Rng(uint, int)</c>, but patching it directly guards against the JIT inlining the base constructor
+/// into it before our patch is installed (which would otherwise leave every RunRngSet stream unmixed).
+/// Both postfixes compute the same final seed, so when both fire the operation is idempotent — no
+/// double-mixing.
+/// </summary>
+[HarmonyPatch(typeof(Rng), MethodType.Constructor, new[] { typeof(uint), typeof(string) })]
+internal static class Rng_UintString_Ctor_Patch
+{
+    private static void Postfix(Rng __instance, uint seed, string name) =>
+        RngMix.Apply(__instance, seed + (uint)StringHelper.GetDeterministicHashCode(name));
 }

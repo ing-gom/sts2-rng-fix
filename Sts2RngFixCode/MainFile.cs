@@ -43,7 +43,7 @@ public partial class MainFile : Node
             var harmony = new Harmony(ModId);
             harmony.PatchAll(typeof(MainFile).Assembly);
             Logger.Info($"[{ModId}] Harmony patches applied.");
-            Logger.Info($"[{ModId}] initialized (v0.1.0).");
+            Logger.Info($"[{ModId}] initialized (v0.1.1).");
         }
         catch (Exception ex)
         {
