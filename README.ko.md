@@ -1,5 +1,12 @@
 # StS2 RNG Fix
 
+> ⚠️ **사용 중단 — 2026-06-19 게임 업데이트(`sts2.dll` 같은 날 패치)부터 더 이상 사용하지 않습니다.**
+> 해당 업데이트가 엔진의 RNG 백엔드를 교체하면서 `Rng._random` 필드 타입이 `System.Random` → 커스텀
+> `MegaRandom`으로 바뀌었습니다. 이 모드는 `Rng` 생성자를 `System.Random` 필드 가정으로 패치하기 때문에,
+> 이제 런을 시작(Embark)하는 순간 `TypeInitializationException`이 발생해 **런이 시작되지 않습니다**.
+> 이 모드가 고치던 `System.Random` 첫-출력 상관 편향은 `MegaRandom`에서는 더 이상 존재하지 않을 가능성이
+> 높아, 포팅하지 않고 모드를 폐기합니다. **현재 빌드에는 설치하지 마세요.**
+
 슬레이 더 스파이어 2의 **상관된 난수(correlated randomness) 편향**을 제거하는 모드입니다.
 
 ## 버그

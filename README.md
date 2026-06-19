@@ -1,5 +1,12 @@
 # StS2 RNG Fix
 
+> ⚠️ **DISCONTINUED — no longer used as of the 2026-06-19 game update (`sts2.dll` build patched the same day).**
+> That update replaced the engine's RNG backend: the `Rng._random` field changed from `System.Random` to a
+> custom `MegaRandom` type. This mod patched `Rng`'s constructor assuming a `System.Random` field, so it now
+> throws a `TypeInitializationException` the moment a run starts (Embark), preventing runs from beginning.
+> The original `System.Random` first-draw correlation that this mod fixed likely no longer exists under
+> `MegaRandom`, so the mod is being retired rather than ported. **Do not install it on current builds.**
+
 A Slay the Spire 2 mod that removes the **correlated-randomness bias** in the game's RNG.
 
 > 한국어 설명은 [README.ko.md](README.ko.md).
